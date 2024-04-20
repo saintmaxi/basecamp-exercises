@@ -37,6 +37,29 @@ contract ErrorTriageExercise {
     }
 
     /**
+     * Found this example that is more elegant
+     */
+
+    // function diffWithNeighbor(
+    //     uint256 _a,
+    //     uint256 _b,
+    //     uint256 _c,
+    //     uint256 _d
+    // ) public pure returns (uint256[] memory) {
+    //     uint256[] memory results = new uint256[](3);
+
+    //     results[0] = abs(int256(_a) - int256(_b));
+    //     results[1] = abs(int256(_b) - int256(_c));
+    //     results[2] = abs(int256(_c) - int256(_d));
+
+    //     return results;
+    // }
+
+    // function abs(int256 x) private pure returns (uint256) {
+    //     return x >= 0 ? uint256(x) : uint256(-x);
+    // }
+
+    /**
      * Changes the _base by the value of _modifier.  Base is always >= 1000.  Modifiers can be
      * between positive and negative 100;
      */
@@ -44,7 +67,7 @@ contract ErrorTriageExercise {
         uint _base,
         int _modifier
     ) public pure returns (uint) {
-        return uint(int(_base) + _modifier);
+        return uint256(int256(_base) + _modifier);
     }
 
     /**
