@@ -14,8 +14,11 @@ contract AddressBook is Ownable {
     }
 
     Contact[] contacts;
+    mapping(uint256 => uint256) idToIndex;
+    mapping(uint256 => bool) contactExists;
 
     error ContactNotFound(uint256 _id);
+    error ContactAlreadyExists(uint256 _id);
 
     constructor(address _initialOwner) Ownable(_initialOwner) {}
 
@@ -25,33 +28,35 @@ contract AddressBook is Ownable {
             string calldata _lastName, 
             uint256[] calldata _phoneNumbers
         ) external onlyOwner {
-        Contact memory _newContact = Contact(_id, _firstName, _lastName, _phoneNumbers);
-        contacts.push(_newContact);
+            if (contactExists[_id]) {
+                revert ContactAlreadyExists(_id);
+            }
+            idToIndex[_id] = contacts.length;
+            contactExists[_id] = true;
+            contacts.push(Contact(_id, _firstName, _lastName, _phoneNumbers));
     }
 
     function deleteContact(uint256 _id) external onlyOwner {
-        for (uint256 i = 0; i < contacts.length; i++) {
-            if (contacts[i].id == _id) {
-                delete contacts[i];
-                return;
-            }
+        if (!contactExists[_id]) {
+            revert ContactNotFound(_id);
         }
-        revert ContactNotFound(_id);
+
+        contactExists[_id] = false;
+        delete contacts[idToIndex[_id]];
     }
 
     function getContact(uint256 _id) external view returns (Contact memory) {
-        for (uint256 i = 0; i < contacts.length; i++) {
-            if (contacts[i].id == _id) {
-                return contacts[i];
-            }
+        if (!contactExists[_id]) {
+            revert ContactNotFound(_id);
         }
-        revert ContactNotFound(_id);
+        
+        return contacts[idToIndex[_id]];
     }
 
     function getAllContacts() external view returns (Contact[] memory) {
         uint256 _notDeleted = 0;
         for (uint256 i = 0; i < contacts.length; i++) {
-            if (contacts[i].phoneNumbers.length != 0) {
+            if (contactExists[contacts[i].id]) {
                 _notDeleted++;
             }
         }
