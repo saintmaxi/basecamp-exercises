@@ -59,6 +59,9 @@ contract ErrorTriageExercise {
     //     return x >= 0 ? uint256(x) : uint256(-x);
     // }
 
+    error InvalidBase(uint _base);
+    error InvalidModifier(int _base);
+
     /**
      * Changes the _base by the value of _modifier.  Base is always >= 1000.  Modifiers can be
      * between positive and negative 100;
@@ -67,7 +70,17 @@ contract ErrorTriageExercise {
         uint _base,
         int _modifier
     ) public pure returns (uint) {
-        return uint256(int256(_base) + _modifier);
+        if (_base < 1000) {
+            revert InvalidBase(_base);
+        }
+        if (_modifier > 100 || _modifier < -100) {
+            revert InvalidModifier(_modifier);
+        }
+        if (_modifier >= 0) {
+            return _base + uint(_modifier);
+        } else {
+            return _base - uint(-_modifier);
+        }
     }
 
     /**
