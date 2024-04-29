@@ -29,16 +29,16 @@ contract HaikuNFT is ERC721 {
         if (lineUsed[_line1] || lineUsed[_line2] || lineUsed[_line3]) {
             revert HaikuNotUnique();
         }
-        _safeMint(msg.sender, counter);
         haikus.push(Haiku(msg.sender, _line1, _line2, _line3));
         lineUsed[_line1] = true;
         lineUsed[_line2] = true;
         lineUsed[_line3] = true;
+        _safeMint(msg.sender, counter);
         counter++;
     }
 
     function shareHaiku(uint256 _id, address _to) public {
-        if (msg.sender != _ownerOf(_id)) {
+        if (ownerOf(_id) != msg.sender) {
             revert NotYourHaiku(_id);
         }
         sharedHaikus[_to].push(_id);
